@@ -1,0 +1,48 @@
+package com.kaluri.test.system;
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
+
+
+
+
+import com.kaluri.config.DriverFactory;
+import com.kaluri.utils.getData;
+import com.efi.ui.HomePage;
+import com.efi.ui.LoginPage;
+
+public class TestLoginSC001 
+{
+  WebDriver driver = DriverFactory.getDriverInstance();
+  LoginPage login = new LoginPage(driver);
+  HomePage home = new HomePage(driver);
+  String un = getData.fromExcel("tdata", "SC001", 1, 0);
+  String pwd = getData.fromExcel("tdata", "SC001", 1, 1);
+  
+  @Test
+  public void testLoginTC001()
+  {
+	  // Enter valid credentials in login page
+	  login.getUserNameTextbox().sendKeys(un);
+	  login.getPasswordTextbox().sendKeys(pwd);
+	  login.getLoginButton().click();
+	  
+	  // Verify Home page and click logout link
+	  boolean actual = home.getLogoutLink().isDisplayed();
+	  boolean expected = true;
+	  Assert.assertEquals(actual, expected);
+	  home.getLogoutLink().click();
+	  // Verify Login page
+	  String actualText =login.getHeaderElement().getText();
+	  String expectedText = "Please identify yourself";
+	  Assert.assertEquals(actualText, expectedText);
+  }
+  @AfterMethod
+  public void postCondition()
+  {
+	  driver.close();
+  }
+}
+
